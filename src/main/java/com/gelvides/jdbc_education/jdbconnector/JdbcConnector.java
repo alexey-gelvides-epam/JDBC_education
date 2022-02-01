@@ -31,7 +31,7 @@ public class JdbcConnector {
                     userName, userPass);
             log.info("Вроде сконектились");
         } catch (Exception ex){
-            ex.printStackTrace();
+            log.error(ex.getMessage());
         }
 
     }
