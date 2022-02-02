@@ -17,5 +17,5 @@
 
 ## Как запустить
 - скопировать проект.
-- В каталоге с Docker-compose.yaml открыть консоль и выполнить **docker-compse build**  и **docekr-compose up**
+- В каталоге с Docker-compose.yaml открыть консоль и выполнить **docker-compse build**  и **docker-compose up**
 - После этого можно попробовать написать команды в основном классе и запустить приложение  
