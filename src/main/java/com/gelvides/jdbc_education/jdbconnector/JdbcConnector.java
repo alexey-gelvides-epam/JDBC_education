@@ -70,6 +70,63 @@ public class JdbcConnector {
         }
     }
 
+    public String getInfo(String surNameUser){
+        var sql = "select user_name, user_surname, account_number, type, opendate \n" +
+                "from users, accounts \n" +
+                "where user_surname = '" + surNameUser + "' and users.user_id = accounts.user_id";
+        StringBuilder stringBuilder = new StringBuilder();
+        try(ResultSet resultSet = connection().createStatement().executeQuery(sql)){
+            while (resultSet.next()){
+                stringBuilder.append(resultSet.getString("user_name") + " | ");
+                stringBuilder.append(resultSet.getString("user_surname") + " | ");
+                stringBuilder.append(resultSet.getInt("account_number") + " | ");
+                stringBuilder.append(resultSet.getString("type") + " | ");
+                stringBuilder.append(resultSet.getString("opendate"));
+            }
+            return stringBuilder.toString();
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return null;
+    }
+
+    public String getInfo(String surNameUser, AccountType type){
+        var sql = "select user_name, user_surname, account_number, type, opendate \n" +
+                "from users, accounts \n" +
+                "where user_surname = '" + surNameUser + "' and type = '" + type + "' and users.user_id = accounts.user_id";
+        StringBuilder stringBuilder = new StringBuilder();
+        try(ResultSet resultSet = connection().createStatement().executeQuery(sql)){
+            while (resultSet.next()){
+                stringBuilder.append(resultSet.getString("user_name") + " | ");
+                stringBuilder.append(resultSet.getString("user_surname") + " | ");
+                stringBuilder.append(resultSet.getInt("account_number") + " | ");
+                stringBuilder.append(resultSet.getString("type") + " | ");
+                stringBuilder.append(resultSet.getString("opendate"));
+            }
+            return stringBuilder.toString();
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return null;
+    }
+
+    public String deleteUserAccount(String name, String surname){
+        var deleteAccount = "delete from accounts using users\n" +
+                "where users.user_name = '" + name + "' and user_surname = '" + surname + "' " +
+                "and users.user_id = accounts.user_id;";
+        var deleteUser = "delete from users\n" +
+                "where users.user_name = '" + name + "' and user_surname = '" + surname + "'";
+        try(Statement statement = connection().createStatement()){
+            statement.execute(deleteAccount);
+            statement.execute(deleteUser);
+            log.info("Записи успешно удалены");
+            System.out.println("Записи " + name + " " + surname + " успешно удалены");
+        }catch (Exception e){
+            log.error(e.getMessage());
+        }
+        return null;
+    }
+
     private int getIdUser(User user){
         var sql = "select user_id from users where user_name = '" + user.getName() + "' and user_surname = '" + user.getSurname() + "'";
         int userId = 0;

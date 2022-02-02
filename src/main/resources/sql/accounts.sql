@@ -4,4 +4,4 @@ create table ACCOUNTS
     type varchar not null,
     user_id int references users(user_id),
     openDate date not null default now()
-)
+);

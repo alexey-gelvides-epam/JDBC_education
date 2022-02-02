@@ -1,6 +1,5 @@
 package com.gelvides.jdbc_education;
 
-import com.gelvides.jdbc_education.entities.User;
 import com.gelvides.jdbc_education.jdbconnector.JdbcConnector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -17,7 +16,6 @@ public class JdbcEducationApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
-        connector.createUser(new User("Test", "Test"));
+    public void run(String... args) {
     }
 }
