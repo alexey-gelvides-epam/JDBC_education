@@ -18,4 +18,4 @@
 ## Как запустить
 - скопировать проект.
 - В каталоге с Docker-compose.yaml открыть консоль и выполнить 
-<docker-compse build>
+- <docker-compse build>
