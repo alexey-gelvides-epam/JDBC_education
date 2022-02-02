@@ -3,7 +3,6 @@ database:
     postrgres:
       host: jdbc:postgresql://localhost
       port: 5433
-      driver: org.postgresql.Driver
-      user-name: postgres
-      user-pass: qwerty
+      userName: postgres
+      userPass: qwerty
       database: postgres

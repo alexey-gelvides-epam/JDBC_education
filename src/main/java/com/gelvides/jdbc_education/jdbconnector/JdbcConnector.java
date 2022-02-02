@@ -1,41 +1,33 @@
 package com.gelvides.jdbc_education.jdbconnector;
 import com.gelvides.jdbc_education.entities.AccountType;
 import com.gelvides.jdbc_education.entities.User;
+import com.gelvides.jdbc_education.prop.AppProperties;
 import com.gelvides.jdbc_education.utils.SqlScriptReader;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.sql.*;
 
 @Slf4j
 @Component
+@EnableConfigurationProperties(AppProperties.class)
 public class JdbcConnector {
-    @Value("${database.connections.postrgres.host}")
-    private String host;
-    @Value("${database.connections.postrgres.port}")
-    private String port;
-    @Value("${database.connections.postrgres.driver}")
-    private String driver;
-    @Value("${database.connections.postrgres.user-name}")
-    private String userName;
-    @Value("${database.connections.postrgres.user-pass}")
-    private String userPass;
-    @Value("${database.connections.postrgres.database}")
-    private String database;
-    @Autowired
-    SqlScriptReader reader;
+    @Autowired AppProperties appProperties;
+    @Autowired SqlScriptReader reader;
+
 
     @SneakyThrows
     private Connection connection(){
-        loging();
         try{
             Class.forName("org.postgresql.Driver");
-            Connection connection = DriverManager.getConnection(host + ":" + port + "/" + database,
-                    userName, userPass);
-            log.info("Подключились к базе данных " + database);
+            Connection connection = DriverManager.getConnection(appProperties.getHost() +
+                            ":" + appProperties.getPort() +
+                            "/" + appProperties.getDatabase(),
+                    appProperties.getUserName(), appProperties.getUserPass());
+            log.info("Подключились к базе данных " + appProperties.getDatabase());
             return connection;
         } catch (Exception ex){
             log.error(ex.getMessage());
@@ -94,18 +86,6 @@ public class JdbcConnector {
             return 0;
         }
     }
-
-    private void loging(){
-        log.info("host: " + host);
-        log.info("port: " + port);
-        log.info("driver: " + driver);
-        log.info("user-name: " + userName);
-        log.info("user-pass: " + userPass);
-        log.info("database: " + database);
-    }
-
-
-
 
 
 }
