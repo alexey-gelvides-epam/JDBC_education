@@ -17,6 +17,6 @@ public class JdbcEducationApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        connector.connection();
+
     }
 }
