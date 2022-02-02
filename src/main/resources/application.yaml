@@ -1,0 +1,9 @@
+database:
+  connections:
+    postrgres:
+      host: jdbc:postgresql://localhost
+      port: 5433
+      driver: org.postgresql.Driver
+      user-name: postgres
+      user-pass: qwerty
+      database: postgres
