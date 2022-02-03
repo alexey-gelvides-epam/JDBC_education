@@ -19,7 +19,6 @@ public class JdbcConnector {
     @Autowired SqlScriptReader reader;
 
 
-    @SneakyThrows
     private Connection connection(){
         try{
             Class.forName("org.postgresql.Driver");
@@ -46,11 +45,11 @@ public class JdbcConnector {
         }
     }
 
-    public void createUser(User user){
+    public void createUser(String name, String surName){
         var sql = "insert into USERS (user_name, user_surname) values ((?), (?))";
         try(PreparedStatement statement = connection().prepareStatement(sql)){
-            statement.setString(1, user.getName());
-            statement.setString(2, user.getSurname());
+            statement.setString(1, name);
+            statement.setString(2, surName);
             statement.executeUpdate();
             log.info("Юзер создан");
         }catch (Exception ex){
@@ -62,7 +61,7 @@ public class JdbcConnector {
         var sql = "insert into accounts (type, user_id) VALUES ((?), (?))";
         try(PreparedStatement statement = connection().prepareStatement(sql)){
             statement.setString(1, type.toString());
-            statement.setInt(2, getIdUser(user));
+            statement.setInt(2, user.getId());
             statement.executeUpdate();
             log.info("Договор создан");
         }catch (Exception e){
@@ -77,11 +76,11 @@ public class JdbcConnector {
         StringBuilder stringBuilder = new StringBuilder();
         try(ResultSet resultSet = connection().createStatement().executeQuery(sql)){
             while (resultSet.next()){
-                stringBuilder.append(resultSet.getString("user_name") + " | ");
-                stringBuilder.append(resultSet.getString("user_surname") + " | ");
-                stringBuilder.append(resultSet.getInt("account_number") + " | ");
-                stringBuilder.append(resultSet.getString("type") + " | ");
-                stringBuilder.append(resultSet.getString("opendate"));
+                stringBuilder.append(resultSet.getString("user_name") + " | " +
+                        resultSet.getString("user_surname") + " | " +
+                        resultSet.getInt("account_number") + " | " +
+                        resultSet.getString("type") + " | " +
+                        resultSet.getString("opendate"));
             }
             return stringBuilder.toString();
         }catch (Exception e){
@@ -97,11 +96,11 @@ public class JdbcConnector {
         StringBuilder stringBuilder = new StringBuilder();
         try(ResultSet resultSet = connection().createStatement().executeQuery(sql)){
             while (resultSet.next()){
-                stringBuilder.append(resultSet.getString("user_name") + " | ");
-                stringBuilder.append(resultSet.getString("user_surname") + " | ");
-                stringBuilder.append(resultSet.getInt("account_number") + " | ");
-                stringBuilder.append(resultSet.getString("type") + " | ");
-                stringBuilder.append(resultSet.getString("opendate"));
+                stringBuilder.append(resultSet.getString("user_name") + " | " +
+                        resultSet.getString("user_surname") + " | " +
+                        resultSet.getInt("account_number") + " | " +
+                        resultSet.getString("type") + " | " +
+                        resultSet.getString("opendate"));
             }
             return stringBuilder.toString();
         }catch (Exception e){
@@ -127,20 +126,43 @@ public class JdbcConnector {
         return null;
     }
 
-    private int getIdUser(User user){
-        var sql = "select user_id from users where user_name = '" + user.getName() + "' and user_surname = '" + user.getSurname() + "'";
-        int userId = 0;
+    public void editUser(User user, String newName, String newSurName){
+        var sql = "update users\n" +
+                "set user_name = '"+ newName +"', user_surname = '"+ newSurName + "'\n" +
+                "where user_name ='"+ user.getName() +"' and user_surname = '"+ user.getSurname() +"' \n " +
+                "returning user_name, user_surname";
+        int changes = 0;
         try(ResultSet resultSet = connection().createStatement().executeQuery(sql)){
             while(resultSet.next()){
-                userId = resultSet.getInt("user_id");
-                log.info("Юзер найден ID: " + userId);
+                if(!resultSet.getString("user_name").equals(user.getName()))
+                    changes++;
+                if(!resultSet.getString("user_surname").equals(user.getSurname()))
+                    changes++;
             }
-            if(userId == 0)
+            log.info("Юзер изменён успешно");
+            System.out.println("Пользователь был изменен. Изменено " + changes + " строк");
+        }catch (Exception e){
+            log.error(e.getMessage());
+            System.out.println("Пользователь не был изменен");
+        }
+    }
+
+    public User getUser(String name, String surName){
+        var sql = "select * from users where user_name = '" + name + "' and user_surname = '" + surName + "'";
+        var user = new User();
+        try(ResultSet resultSet = connection().createStatement().executeQuery(sql)){
+            while(resultSet.next()){
+                user.setName(resultSet.getString("user_name"))
+                        .setSurname(resultSet.getString("user_surname"))
+                        .setId(resultSet.getInt("user_id"));
+                log.info("Юзер найден ID: " + user.getId());
+            }
+            if(user.getId() == 0)
                 throw new Exception("User not found");
-            return userId;
+            return user;
         }catch (Exception ex){
             log.error(ex.getMessage());
-            return 0;
+            return null;
         }
     }
 
